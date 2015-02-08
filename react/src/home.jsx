@@ -7,7 +7,7 @@ var DocumentTitle = require('react-document-title')
 var Home = React.createClass({
 
   render: function() {
-    return (<DocumentTitle title="React Isomorphic Video Game Search"></DocumentTitle>)
+    return (<DocumentTitle title="Analyze my Tweets"></DocumentTitle>)
   }
 
 })
