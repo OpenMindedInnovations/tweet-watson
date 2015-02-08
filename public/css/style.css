@@ -1,0 +1,41 @@
+body, html {
+  height: 100%;
+  min-height: 100%;
+}
+
+.main-wrapper {
+  background: #4183C4;
+  height: 100%;
+  min-height: 100%;
+}
+
+#screename-input {
+  position: fixed;
+  top: calc(50% - 30px);
+  left: calc(50% - 250px);
+  height: 60px;
+  width: 500px;
+  padding: 20px;
+  margin: 0 auto;
+  border: 2px solid #fff;
+  color: #fff;
+  background: transparent;
+  outline: none;
+  border-radius: 5px;
+}
+
+#screename-input::-webkit-input-placeholder {
+  color: #fff;
+}
+
+#screename-input:-moz-placeholder { /* Firefox 18- */
+  color: #fff;  
+}
+
+#screename-input::-moz-placeholder {  /* Firefox 19+ */
+  color: #fff;  
+}
+
+#screename-input:-ms-input-placeholder {  
+  color: #fff;  
+}
