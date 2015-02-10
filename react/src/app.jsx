@@ -12,6 +12,8 @@ var Location = Router.Location
 var CaptureClicks = require('react-router-component/lib/CaptureClicks')
 var Link = require('react-router-component').Link
 
+var reflux = require('reflux')
+
 
 var App = React.createClass({
 
