@@ -34,4 +34,4 @@ public/js/behavior.*js
 # Misc
 .DS_Store
 
-./react/src/config/index.js
+/react/src/config/index.js
