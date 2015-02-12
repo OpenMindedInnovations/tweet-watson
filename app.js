@@ -22,6 +22,8 @@ var querystring = require('querystring');
 
 var vcap_services = require('./VCAP_Services').vcap;
 var flatten = require('./flatten');
+var home = require('./react/src/home.jsx');
+var index = require('./react/src/config/index.js');
 
 app.use(logger('dev'))
 app.use(bodyParser.json())
@@ -31,10 +33,10 @@ app.use(express.static(path.join(__dirname, 'public')))
 
 
 var T = new Twit({
-  consumer_key: 'X6NZPq4O3WmpJmuIINHweWNVX',
-  consumer_secret: 'ElJY4Y67A5X8ikvEJ8iPMH1U108fwpDQ1yuB1tCzd2KFLeAVFE',
-  access_token: '268490203-fjGBXolsKf3F03PKmoCXfHknPCHbxHYwokOg6bNB',
-  access_token_secret: 'eicRmizg8XyzTqKq1OrysaNtNevMucmX5CV19uBTHczXl'
+  consumer_key: appConfig.CONSUMER_KEY,
+  consumer_secret: appConfig.CONSUMER_SECRET,
+  access_token: appConfig.ACCESS_TOKEN,
+  access_token_secret: appConfig.ACCESS_TOKEN_SECRET
 });
 
 // There are many useful environment variables available in process.env.
@@ -53,9 +55,9 @@ var appInfo = JSON.parse(process.env.VCAP_APPLICATION || "{}");
 // If VCAP_SERVICES is undefined we use a local module as mockup
 
 // defaults for dev outside bluemix
-var service_url = 'https://gateway.watsonplatform.net/systemu/service/';
-var service_username = '093c8792-5223-4996-ac12-f6769751d1a4';
-var service_password = 'i7ZEIoJ98H93';
+var service_url = appConfig.SERVICE_URL;
+var service_username = appConfig.SERVICE_USERNAME;
+var service_password = appConfig.SERVICE_PASSWORD;
 
 //if (process.env.VCAP_SERVICES) {
 if (vcap_services) {
@@ -84,36 +86,25 @@ console.log('service_password = ' + new Array(service_password.length).join("X")
 
 var auth = 'Basic ' + new Buffer(service_username + ':' + service_password).toString('base64');
 
-// render react routes on server
-app.use(function(req, res, next) {
-  // if(req.query.q) {
-  //   res.redirect('/search/' + req.query.q)
-  // }  
-  try {
-    reactAsync.renderToStringAsync(reactApp.routes({path: req.path}), function(err, markup) {
-      if(err) {
-        return next()
-      }
-      return res.send('<!DOCTYPE html>' + markup.replace('%react-iso-vgs%', reactApp.title.rewind()))
-    })
-  } catch(err) {
-    return next()
-  }
-})
 
-app.post('/', function(req, res) {
+
+app.post('/get-watson-data', function(req, res) {
   console.log('Post request made')
   //twitter call
   T.get('statuses.user_timeline', { screen_name: req.body.username, count: 200 }, function( err, data, response) {
-    allTweets = '';
+    var allTweets = '';
     data.forEach(function(entry) {
       allTweets += ' ' + entry.text;
-  });
-  console.log(allTweets)
+    });
+    console.log(allTweets)
 
-  callWatsonApi(res, req, allTweets)
+    callWatsonApi(res, req, allTweets)
   });
 });
+
+//app.post('/watson_call', function(req, res) {
+//  var allTweets = document.getElementById("screename-input")
+//});
 
 var callWatsonApi = function(res, req, message_to_be_analyzed) {
   // See User Modeling API docs. Path to profile analysis is /api/v2/profile
@@ -153,6 +144,9 @@ var callWatsonApi = function(res, req, message_to_be_analyzed) {
   });
 
 };
+
+//all this code below is for modeling service and shouldn't really be messed with, unless it can be improved of course or add react
+//components
 
 // creates a request function using the https options and the text in content
 // the function that return receives a callback
@@ -225,6 +219,25 @@ var create_viz_request = function(options,profile) {
     viz_req.end();
   };
 };
+
+
+// render react routes on server
+app.use(function(req, res, next) {
+
+  if(req.query.q) {
+    res.redirect('/results/' + req.query.q)
+  }
+  try {
+    reactAsync.renderToStringAsync(reactApp.routes({path: req.path}), function(err, markup) {
+      if(err) {
+        return next()
+      }
+      return res.send('<!DOCTYPE html>' + markup.replace('%react-iso-vgs%', reactApp.title.rewind()))
+    })
+  } catch(err) {
+    return next()
+  }
+})
 
 // handle errors
 app.use(function(err, req, res, next) {

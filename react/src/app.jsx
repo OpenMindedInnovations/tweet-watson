@@ -5,7 +5,9 @@ var React = require('react/addons')
 var Router = require('react-router-component')
 var DocumentTitle = require('react-document-title')
 
+var Search = require('./search')
 var Home = require('./home')
+var Results = require('./results')
 
 var Locations = Router.Locations
 var Location = Router.Location
@@ -28,6 +30,10 @@ var App = React.createClass({
     }    
   },
 
+  searchTwitter: function(query) {
+    this.refs.router.navigate('/results' + encodeURI(query))
+  },
+
   render: function() {
     return (
       <html>
@@ -39,15 +45,15 @@ var App = React.createClass({
           <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css" />
         </head>
         <body>
-        <div className='main-wrapper'>
-          <DocumentTitle title="Twitter Watson">
-          <CaptureClicks>
-            <Locations ref="router" path={this.props.path}>
-              <Location path="/" handler={Home} />
-            </Locations>
-          </CaptureClicks>
-          </DocumentTitle>
-        </div>
+        <Search onSearch={this.searchTwitter} entryPath={this.state.entryPath} />
+        <DocumentTitle title="%react-iso-vgs%">
+        <CaptureClicks>
+          <Locations ref="router" path={this.props.path}>
+            <Location path="/" handler={Home} />
+            <Location path="/results/:query" handler={Results} />
+          </Locations>
+        </CaptureClicks>
+        </DocumentTitle>
         <script type="text/javascript" src="/js/behavior.min.js"></script>
         </body>
       </html>
